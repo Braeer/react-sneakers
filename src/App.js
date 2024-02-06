@@ -119,7 +119,7 @@ function App() {
       
         <Routes>
           <Route
-            path="/"
+            path="react-sneakers"
             element={
               <Home
                 items={items}
@@ -135,14 +135,14 @@ function App() {
             exact
           />
           <Route
-            path="/favorites"
+            path="favorites"
             element={
             <Favorites />
             }
             exact
           />
           <Route
-            path="/orders"
+            path="orders"
             element={
               <Orders />
             }
