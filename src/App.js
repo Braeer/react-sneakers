@@ -20,8 +20,20 @@ function App() {
           </ul>
         </header>
 
-        <div className="content p-40">
-          <h1 className='mb-40'>Все кроссовки</h1>
+  React.useEffect(() => { //Установка данных с сервера
+    // fetch('https://65945e0f1493b011606a6c3b.mockapi.io/items').then(res => {
+    //   return res.json();
+    // }).then(json => {
+    //   setItems(json);
+    // }) 
+    axios.get('https://45c73ff2dd07d5ae.mokky.dev/items').then(res => {
+      // console.log(res.data);
+      setItems(res.data)
+    })
+    axios.get('https://45c73ff2dd07d5ae.mokky.dev/Cart').then(res => {
+      setCartItems(res.data);
+    })
+  }, []);
 
           <div className="d-flex">
             <div className="card">
