@@ -24,11 +24,9 @@ function App() {
   React.useEffect(() => { //Установка данных с сервера
     async function fetchData() {
       setIsLoading(true);
-      const [itemsResponse, cartResponse, favoritesResponse] = await Promise.all([
-        axios.get('https://65945e0f1493b011606a6c3b.mockapi.io/items'),
-        axios.get('https://65945e0f1493b011606a6c3b.mockapi.io/Cart'),
-        axios.get('https://45c73ff2dd07d5ae.mokky.dev/favorite')
-      ]);
+      const itemsResponse = await axios.get('https://65945e0f1493b011606a6c3b.mockapi.io/items');
+      const cartResponse = await axios.get('https://65945e0f1493b011606a6c3b.mockapi.io/Cart');
+      const favoritesResponse = await axios.get('https://45c73ff2dd07d5ae.mokky.dev/favorite');
 
       setIsLoading(false)
 
@@ -40,26 +38,27 @@ function App() {
     fetchData();
   }, []);
 
-  const onAddToCart = async (obj) => { //Добавление предметов
+  const onAddToCart = (obj) => { //Добавление предметов
     console.log(obj);
     try {
       const findItem = cartItems.find((item) => Number(item.parentId) === Number(obj.id));
       if(findItem) {
-        setCartItems((prev) => prev.filter((item) => Number(item.parentId) !== Number(obj.id)));
-        console.log(findItem.id);
-        await axios.delete(`https://65945e0f1493b011606a6c3b.mockapi.io/Cart/${(findItem.id)}`)
+        setCartItems(prev => prev.filter(item => Number(item.parentId) !== Number(obj.id)));
+        axios.delete(`https://45c73ff2dd07d5ae.mokky.dev/Cart/${findItem.id}`)
       } else {
         setCartItems((prev) => [...prev, obj]);
-        const { data } = await axios.post('https://65945e0f1493b011606a6c3b.mockapi.io/Cart', obj);
-        setCartItems((prev) => prev.map((item) => {
-          if(item.parentId === data.parentId) {
-            return {
-              ...item,
-              id: data.id
+        const { data } =  axios.post('https://65945e0f1493b011606a6c3b.mockapi.io/Cart', obj);
+        setCartItems((prev) =>
+          prev.map((item) => {
+            if (item.parentId === data.parentId) {
+              return {
+                ...item,
+                id: data.id,
+              };
             }
-          }
-          return item;
-        }))
+            return item;
+          }),
+        );
       }
     } catch (error) {
       alert('Ошибка при добавлении в корзину');
@@ -89,7 +88,7 @@ function App() {
     }
    } catch (error) {
     alert('Не удалось добавить в фавориты')
-    console.error(error);
+    console.log(obj);
    }
   }
 
@@ -98,7 +97,7 @@ function App() {
   }
 
   const isItemAdded = (id) => {
-    return cartItems.some((obj) => Number(obj.parentId) === Number(id))
+    return cartItems.some((obj) => Number(obj.id) === Number(id))
   } 
 
   return ( //Верстка
@@ -113,7 +112,7 @@ function App() {
       onAddToCart
      }}>
       <div className="wrapper clear">
-        <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem} opened={cartOpened}/>
+        {cartOpened ? <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem} /> : null}
         <Header onClickCart={() => setCartOpened(true)}  />
 
       
